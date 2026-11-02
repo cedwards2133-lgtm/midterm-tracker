@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2026 Midterm Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400..800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  --bg:#000000;
+  --surface:#131313;
+  --surface-2:#1c1c1c;
+  --ink:#f3f4f6;
+  --ink-dim:#8d9199;
+  --border:#2a2a2a;
+  --shadow:rgba(0,0,0,.6);
+
+  /* graded D->R spectrum used for column headers / stat accents */
+  --d:#3b82f6;
+  --d2:#3b78e0;
+  --d3:#3a68b8;
+  --mid:#9aa0aa;
+  --r3:#b85f4e;
+  --r2:#cf4b3c;
+  --r:#e44b3a;
+  --ind:#d4a92e;
+
+  --d-wash:rgba(59,130,246,.14);
+  --d2-wash:rgba(59,120,224,.11);
+  --d3-wash:rgba(58,104,184,.09);
+  --mid-wash:rgba(255,255,255,.05);
+  --r3-wash:rgba(184,95,78,.09);
+  --r2-wash:rgba(207,75,60,.11);
+  --r-wash:rgba(228,75,58,.14);
+  --ind-wash:rgba(212,169,46,.14);
+
+  /* full-strength party fills for candidate bars */
+  --d-solid:#2f66d6;
+  --d-solid-text:#ffffff;
+  --d-idle-bg:rgba(59,130,246,.14);
+  --d-idle-text:#8fb4f5;
+  --d-idle-border:rgba(59,130,246,.35);
+
+  --r-solid:#d63b2f;
+  --r-solid-text:#ffffff;
+  --r-idle-bg:rgba(214,59,47,.14);
+  --r-idle-text:#f0968b;
+  --r-idle-border:rgba(214,59,47,.35);
+
+  --i-solid:#c99a26;
+  --i-solid-text:#171205;
+  --i-idle-bg:rgba(201,154,38,.16);
+  --i-idle-text:#e3c26e;
+  --i-idle-border:rgba(201,154,38,.4);
+}
+
+*{box-sizing:border-box;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'IBM Plex Sans',system-ui,sans-serif;
+  padding:28px 20px 60px;
+}
+.wrap{max-width:1280px;margin:0 auto;}
+
+header.masthead{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:20px;
+  flex-wrap:wrap;
+  border-bottom:2px solid var(--ink);
+  padding-bottom:14px;
+  margin-bottom:22px;
+}
+h1{
+  font-family:'Source Serif 4',Georgia,serif;
+  font-weight:700;
+  font-size:2.3rem;
+  letter-spacing:-0.01em;
+  margin:0;
+  text-wrap:balance;
+}
+.eyebrow{
+  font-size:.72rem;
+  font-weight:600;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+  color:var(--ink-dim);
+  margin:0 0 4px;
+}
+.masthead-right{text-align:right;}
+.masthead-note{
+  font-size:.82rem;
+  color:var(--ink-dim);
+  max-width:340px;
+  line-height:1.45;
+}
+.reset-btn{
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:.75rem;
+  font-weight:600;
+  color:var(--ink-dim);
+  background:none;
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:6px 10px;
+  cursor:pointer;
+  margin-top:8px;
+}
+.reset-btn:hover{border-color:var(--ink-dim);color:var(--ink);}
+.reset-btn:focus-visible{outline:2px solid var(--d2);outline-offset:2px;}
+
+/* Scoreboard */
+.scoreboard{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:22px 24px 20px;
+  box-shadow:0 2px 10px var(--shadow);
+  margin-bottom:30px;
+}
+.stat-row{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:18px;
+  margin-bottom:20px;
+}
+.stat{border-left:3px solid var(--stat-color,var(--mid));padding-left:12px;}
+.stat .num{
+  font-family:'IBM Plex Mono',monospace;
+  font-variant-numeric:tabular-nums;
+  font-size:2.1rem;
+  font-weight:600;
+  line-height:1;
+  color:var(--stat-color,var(--ink));
+}
+.stat .label{
+  font-size:.72rem;
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--ink-dim);
+  margin-top:5px;
+}
+.stat .sub{
+  font-size:.78rem;
+  color:var(--ink-dim);
+  margin-top:3px;
+}
+.stat .sub.clinched{color:var(--stat-color,var(--ink));font-weight:600;}
+
+.bar-wrap{position:relative;padding-top:22px;padding-bottom:26px;}
+.bar{
+  display:flex;
+  width:100%;
+  height:34px;
+  border-radius:7px;
+  overflow:hidden;
+  border:1px solid var(--border);
+  background:var(--surface-2);
+}
+.seg{height:100%;transition:width .35s ease;}
+.seg.uncalled{
+  background:repeating-linear-gradient(135deg,var(--surface-2),var(--surface-2) 6px,var(--border) 6px,var(--border) 12px);
+}
+.threshold{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:0;
+  border-left:2px dashed var(--ink-dim);
+}
+.threshold .tag{
+  position:absolute;
+  top:-20px;
+  right:4px;
+  left:auto;
+  font-size:.68rem;
+  font-weight:600;
+  color:var(--ink-dim);
+  white-space:nowrap;
+  font-family:'IBM Plex Mono',monospace;
+}
+.threshold.right .tag{
+  right:auto;
+  left:4px;
+}
+.threshold.below .tag{
+  top:auto;
+  bottom:4px;
+  right:8px;
+  left:auto;
+}
+.bar-legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px;
+  margin-top:16px;
+  font-size:.72rem;
+  color:var(--ink-dim);
+}
+.bar-legend span{display:inline-flex;align-items:center;gap:5px;}
+.swatch{width:9px;height:9px;border-radius:2px;display:inline-block;}
+
+/* Columns */
+.columns{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  align-items:flex-start;
+}
+.column{
+  flex:1 1 160px;
+  min-width:160px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.col-head{
+  border-radius:8px;
+  padding:8px 10px;
+  background:var(--col-wash);
+  border:1px solid var(--border);
+}
+.col-head .name{
+  font-size:.74rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:var(--col-color);
+}
+.col-head .count{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.68rem;
+  color:var(--ink-dim);
+  margin-top:1px;
+}
+
+.race-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:9px;
+  padding:9px 10px 10px;
+  box-shadow:0 1px 3px var(--shadow);
+}
+.race-state{
+  font-family:'Source Serif 4',Georgia,serif;
+  font-weight:600;
+  font-size:.92rem;
+  margin-bottom:6px;
+}
+.race-candidates{display:flex;flex-direction:column;gap:5px;}
+.cand{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+  width:100%;
+  text-align:left;
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:.78rem;
+  font-weight:500;
+  color:var(--ink);
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:6px 8px;
+  cursor:pointer;
+  transition:background .12s ease,border-color .12s ease,opacity .12s ease;
+}
+.cand:hover{filter:brightness(1.12);}
+.cand:focus-visible{outline:2px solid #fff;outline-offset:1px;}
+.name-col{display:flex;flex-direction:column;gap:1px;}
+.name-col .note{
+  font-size:.65rem;
+  font-weight:600;
+  letter-spacing:.02em;
+  opacity:.75;
+  font-style:italic;
+}
+.cand .p{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.66rem;
+  font-weight:700;
+  padding:1px 5px;
+  border-radius:4px;
+  flex:none;
+  opacity:.85;
+}
+
+/* idle: bar already tinted the party color */
+.cand[data-party="D"]{background:var(--d-idle-bg);border-color:var(--d-idle-border);color:var(--d-idle-text);}
+.cand[data-party="R"]{background:var(--r-idle-bg);border-color:var(--r-idle-border);color:var(--r-idle-text);}
+.cand[data-party="I"]{background:var(--i-idle-bg);border-color:var(--i-idle-border);color:var(--i-idle-text);}
+
+/* called: solid party-color fill */
+.cand.called[data-party="D"]{background:var(--d-solid);border-color:var(--d-solid);color:var(--d-solid-text);}
+.cand.called[data-party="R"]{background:var(--r-solid);border-color:var(--r-solid);color:var(--r-solid-text);}
+.cand.called[data-party="I"]{background:var(--i-solid);border-color:var(--i-solid);color:var(--i-solid-text);}
+.cand.faded{opacity:.35;}
+
+.race-card.decided{border-color:var(--decided-color);}
+.race-card.decided .race-state{color:var(--decided-color);}
+
+footer{
+  margin-top:34px;
+  font-size:.72rem;
+  color:var(--ink-dim);
+  text-align:center;
+}
+
+@media (max-width:640px){
+  h1{font-size:1.7rem;}
+  .masthead-right{text-align:left;}
+  .column{flex:1 1 100%;}
+}
+
+/* ===== Tabs & shared shell ===== */
+html{scroll-behavior:auto;}
+.tabs{
+  position:sticky;top:0;z-index:20;
+  display:flex;gap:4px;
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+  margin:-8px 0 26px;
+  padding-top:8px;
+  overflow-x:auto;
+}
+.tab{
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:.95rem;font-weight:600;
+  color:var(--ink-dim);
+  background:none;border:0;
+  border-bottom:3px solid transparent;
+  padding:12px 18px;
+  cursor:pointer;white-space:nowrap;
+}
+.tab:hover{color:var(--ink);}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--d);}
+.tab:focus-visible{outline:2px solid var(--d2);outline-offset:-2px;border-radius:6px;}
+.panel[hidden]{display:none;}
+
+/* ===== Start Here ===== */
+.start h2{
+  font-family:'Source Serif 4',Georgia,serif;
+  font-weight:700;font-size:1.5rem;letter-spacing:-0.005em;
+  margin:44px 0 6px;
+}
+.start h2 + .sub-h{font-size:.92rem;color:var(--ink-dim);margin:0 0 16px;max-width:680px;line-height:1.5;}
+.start p{font-size:1rem;line-height:1.65;margin:0 0 12px;max-width:720px;}
+.start .dim{color:var(--ink-dim);}
+.start strong{font-weight:600;}
+.jump-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-end;}
+.jump{
+  display:inline-block;text-decoration:none;
+  font-size:.82rem;font-weight:600;color:var(--ink);
+  border:1px solid var(--border);border-radius:8px;padding:8px 14px;background:var(--surface);
+}
+.jump:hover{border-color:var(--ink-dim);}
+.jump:focus-visible{outline:2px solid var(--d2);outline-offset:2px;}
+
+.tldr{
+  background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--d);
+  border-radius:12px;padding:20px 24px;margin-bottom:22px;
+}
+.tldr h2{margin:0 0 10px;font-size:1.2rem;}
+.tldr ul{margin:0;padding-left:20px;}
+.tldr li{font-size:1rem;line-height:1.6;margin-bottom:8px;max-width:760px;}
+
+.big-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:0 0 6px;}
+.big-stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;border-top:3px solid var(--bs,var(--mid));}
+.big-stat .n{font-family:'IBM Plex Mono',monospace;font-size:2.1rem;font-weight:600;line-height:1;color:var(--bs,var(--ink));}
+.big-stat .l{font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);margin-top:8px;}
+.big-stat .d{font-size:.85rem;color:var(--ink-dim);margin-top:4px;line-height:1.4;}
+
+.table-scroll{overflow-x:auto;}
+table.cmp{border-collapse:collapse;width:100%;max-width:820px;font-size:.92rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+table.cmp th,table.cmp td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.45;}
+table.cmp th{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);background:var(--surface-2);}
+table.cmp tr:last-child td{border-bottom:0;}
+table.cmp td:first-child{color:var(--ink-dim);font-weight:600;white-space:nowrap;}
+
+.steps{list-style:none;counter-reset:s;margin:0;padding:0;max-width:760px;}
+.steps li{
+  counter-increment:s;position:relative;
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:14px 16px 14px 56px;margin-bottom:10px;font-size:1rem;line-height:1.6;
+}
+.steps li::before{
+  content:counter(s);position:absolute;left:14px;top:12px;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--surface-2);border:1px solid var(--border);
+  font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:.85rem;
+  display:flex;align-items:center;justify-content:center;color:var(--ink);
+}
+.steps li.d::before{background:var(--d-solid);border-color:var(--d-solid);color:#fff;}
+.steps li.r::before{background:var(--r-solid);border-color:var(--r-solid);color:#fff;}
+.steps li b{font-weight:600;}
+.pill{font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:600;padding:2px 7px;border-radius:5px;border:1px dashed var(--ink-dim);color:var(--ink);white-space:nowrap;}
+
+.rating-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;max-width:980px;}
+.rating{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;border-left:4px solid var(--rc);}
+.rating .t{font-weight:700;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;color:var(--rc);}
+.rating .x{font-size:.9rem;line-height:1.5;margin-top:4px;color:var(--ink);}
+
+.scen-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:14px;max-width:1000px;}
+.scen{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+.scen h3{margin:0 0 4px;font-family:'Source Serif 4',Georgia,serif;font-size:1.1rem;}
+.scen .badges{display:flex;gap:6px;margin-bottom:10px;}
+.badge{font-family:'IBM Plex Mono',monospace;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:5px;}
+.badge.d{background:var(--d-idle-bg);color:var(--d-idle-text);border:1px solid var(--d-idle-border);}
+.badge.r{background:var(--r-idle-bg);color:var(--r-idle-text);border:1px solid var(--r-idle-border);}
+.scen ul{margin:0;padding-left:18px;}
+.scen li{font-size:.94rem;line-height:1.55;margin-bottom:6px;}
+.callout{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;max-width:900px;margin-top:16px;}
+.callout p{font-size:.94rem;margin:0 0 8px;}
+.callout p:last-child{margin:0;}
+.callout ul{margin:6px 0 0;padding-left:18px;}
+.callout li{font-size:.94rem;line-height:1.55;margin-bottom:4px;}
+
+table.times td.t{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--ink);white-space:nowrap;}
+table.times td{font-size:.9rem;}
+table.times{max-width:980px;}
+
+dl.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px 18px;max-width:1000px;margin:0;}
+dl.gloss div{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+dl.gloss dt{font-weight:700;font-size:.95rem;margin-bottom:3px;}
+dl.gloss dd{margin:0;font-size:.9rem;line-height:1.5;color:var(--ink-dim);}
+
+.src{font-size:.78rem;color:var(--ink-dim);margin-top:30px;max-width:760px;line-height:1.5;}
+
+/* ===== House tab ===== */
+.h-group{margin-bottom:28px;}
+.h-group .col-head{margin-bottom:12px;max-width:none;}
+.h-group .col-head .name{font-size:.8rem;}
+.h-group .col-head .count{font-size:.75rem;}
+.h-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;}
+.race-meta{font-size:.72rem;color:var(--ink-dim);line-height:1.45;margin:-2px 0 8px;}
+.race-meta .tm{font-family:'IBM Plex Mono',monospace;}
+.h-explain{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:14px 18px;margin-bottom:22px;font-size:.92rem;line-height:1.6;color:var(--ink);
+}
+.h-explain b{font-weight:600;}
+@media (max-width:640px){
+  .tab{padding:12px 14px;}
+  .jump-row{justify-content:flex-start;}
+  .start h2{font-size:1.3rem;}
+}
+
+.start .masthead-note{max-width:340px;font-size:.82rem;line-height:1.45;margin:0;}
+.start .masthead-right{text-align:right;}
+@media (max-width:640px){ .start .masthead-right{text-align:left;} }
+.nw{white-space:nowrap;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab" role="tab" id="tab-start" data-tab="start" aria-selected="true">Start Here</button>
+    <button class="tab" role="tab" id="tab-senate" data-tab="senate" aria-selected="false">Senate</button>
+    <button class="tab" role="tab" id="tab-house" data-tab="house" aria-selected="false">House</button>
+  </nav>
+
+<section class="panel start" id="panel-start" role="tabpanel" aria-labelledby="tab-start">
+  <header class="masthead">
+    <div>
+      <p class="eyebrow">Election Day &middot; Tuesday, November 3, 2026</p>
+      <h1>Midterms, Explained</h1>
+    </div>
+    <div class="masthead-right">
+      <p class="masthead-note">No politics background needed. Read this once, then use the Senate and House tabs to follow along on election night.</p>
+      <div class="jump-row">
+        <a class="jump" href="#senate">Go to Senate &rarr;</a>
+        <a class="jump" href="#house">Go to House &rarr;</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="tldr">
+    <h2>The 30-second version</h2>
+    <ul>
+      <li>On Tuesday, voters decide <strong>which party controls Congress</strong> for the last two years of President Trump&rsquo;s term. Congress has two halves: the <strong>House</strong> and the <strong>Senate</strong>.</li>
+      <li>The party that wins a half runs it. They decide which bills get voted on, who leads the committees, and who gets investigated.</li>
+      <li>Each half needs a <strong>majority</strong> to be in control. In the House that&rsquo;s <strong>218</strong> seats. In the Senate it&rsquo;s <strong>51</strong> for Democrats (the reason is below).</li>
+      <li>This site lets you track the results live. When a race gets called on TV, click the winner and watch the scoreboard move.</li>
+    </ul>
+  </div>
+
+  <div class="big-stats">
+    <div class="big-stat" style="--bs:var(--mid)"><div class="n">218</div><div class="l">House seats to win control</div><div class="d">out of 435 total seats</div></div>
+    <div class="big-stat" style="--bs:var(--d)"><div class="n">51</div><div class="l">Senate seats Democrats need</div><div class="d">out of 100 total seats</div></div>
+    <div class="big-stat" style="--bs:var(--r)"><div class="n">50 + VP</div><div class="l">Senate seats Republicans need</div><div class="d">a 50&ndash;50 tie goes to them</div></div>
+  </div>
+
+  <h2>What&rsquo;s on the ballot</h2>
+  <p class="sub-h">A &ldquo;midterm&rdquo; happens halfway through a president&rsquo;s four-year term. It&rsquo;s basically a mid-term report card, and the president&rsquo;s party usually loses ground.</p>
+  <div class="table-scroll">
+  <table class="cmp">
+    <thead><tr><th></th><th>House of Representatives</th><th>Senate</th></tr></thead>
+    <tbody>
+      <tr><td>Total members</td><td>435</td><td>100 (two per state)</td></tr>
+      <tr><td>Term length</td><td>2 years</td><td>6 years</td></tr>
+      <tr><td>Up this year</td><td>All 435 seats</td><td>35 seats (about a third)</td></tr>
+      <tr><td>Majority needed</td><td>218</td><td>51 (or 50 for the party with the VP)</td></tr>
+      <tr><td>Who runs it now</td><td>Republicans, by a narrow margin</td><td>Republicans, 53&ndash;47</td></tr>
+      <tr><td>What Democrats need</td><td>Gain about 4 seats</td><td>Gain 4 seats (47 &rarr; 51)</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="dim" style="margin-top:12px;font-size:.88rem">The 35 Senate seats are 33 regular elections plus 2 special elections (Ohio and Florida) for seats whose holders left mid-term. The other 65 senators aren&rsquo;t up until 2028 or 2030, which is why the Senate tab starts the scoreboard at 34 Democrats and 31 Republicans.</p>
+
+  <h2>Why 51 for Democrats &mdash; and why people say 52</h2>
+  <p class="sub-h">This is the question everyone asks, and it&rsquo;s the reason the Senate tab has two dashed lines.</p>
+  <ol class="steps">
+    <li><b>The Senate has 100 members, so a majority is 51.</b></li>
+    <li class="r"><b>A 50&ndash;50 tie is broken by the Vice President,</b> who presides over the Senate. Right now that&rsquo;s JD Vance, a Republican. So Republicans keep control with just 50 seats.</li>
+    <li class="d"><b>That means Democrats need 51 outright.</b> That&rsquo;s the main finish line on the Senate tab: <span class="pill">51 &middot; D outright</span></li>
+    <li class="d"><b>Here&rsquo;s the catch: John Fetterman.</b> He&rsquo;s a Democratic senator from Pennsylvania, he isn&rsquo;t up for election until 2028, and his seat is one of the 34 Democratic seats that aren&rsquo;t on the ballot this year. He has broken with his party on several big votes, spoke at the Republican convention in September, and Trump has publicly urged him to switch parties. He hasn&rsquo;t said he will; he told CBS he&rsquo;d revisit his plans after the election.</li>
+    <li class="d"><b>Why that matters:</b> if Democrats win exactly 51 and Fetterman switched, it would be 50&ndash;50 with Vance breaking ties, and Republicans would be back in charge. So some analysts say Democrats really want <strong>52</strong>, a majority that survives losing him. That&rsquo;s the second line: <span class="pill">52 &middot; D w/o Fetterman</span></li>
+  </ol>
+  <p class="dim" style="margin-top:8px;font-size:.9rem">Bottom line: 51 is the official line, and 52 is the safety cushion.</p>
+
+  <h2>How to read the ratings</h2>
+  <p class="sub-h">Every race gets a rating for how likely each party is to win it. The colors on the trackers match this scale.</p>
+  <div class="rating-row">
+    <div class="rating" style="--rc:var(--d)"><div class="t">Lock / Solid</div><div class="x">Basically decided. The favorite wins unless something wild happens.</div></div>
+    <div class="rating" style="--rc:var(--d2)"><div class="t">Likely</div><div class="x">A clear favorite, but an upset isn&rsquo;t unthinkable.</div></div>
+    <div class="rating" style="--rc:var(--d3)"><div class="t">Lean</div><div class="x">A slight edge for one side. This one can go either way.</div></div>
+    <div class="rating" style="--rc:var(--mid)"><div class="t">Toss-Up</div><div class="x">No clear favorite. These races decide who controls Congress.</div></div>
+  </div>
+  <p style="margin-top:14px;font-size:.92rem" class="dim">&ldquo;D&rdquo; and &ldquo;R&rdquo; after a rating tell you which party is favored (for example, &ldquo;Lean R&rdquo; means a slight Republican edge). The <strong>Senate</strong> ratings are this site&rsquo;s own calls. The <strong>House</strong> tab uses the Cook Political Report, a well-known nonpartisan newsletter that rates every race.</p>
+
+  <h2>Where things stand</h2>
+  <div class="callout" style="margin-top:0">
+    <p><strong>House:</strong> Cook has Democrats as the favorites. As of Oct. 30 it rates Democrats as favored in 222 seats and Republicans in 195, with 18 true Toss-Ups left, and it projects Democrats finishing with 227&ndash;240 seats.</p>
+    <p><strong>Senate:</strong> A tougher climb. Democrats must flip four Republican-held seats and hold all of their own. See the Senate tab for this site&rsquo;s current ratings.</p>
+  </div>
+
+  <h2>How to use the trackers</h2>
+  <ol class="steps">
+    <li><b>Pick a tab</b> at the top: Senate or House.</li>
+    <li><b>Wait for a race to be called.</b> News outlets like AP, CNN and Fox &ldquo;call&rdquo; a race when they&rsquo;re confident who won.</li>
+    <li><b>Click the winner&rsquo;s name</b> on that race&rsquo;s card. It lights up and the scoreboard and bar update. Click again to undo.</li>
+    <li><b>Watch the dashed lines.</b> The first party to cross its line wins control. &ldquo;Reset all calls&rdquo; clears everything.</li>
+  </ol>
+  <p class="dim" style="margin-top:8px;font-size:.9rem">This isn&rsquo;t a live feed. It only changes when you click. Your clicks are saved in your own browser and nobody else sees them.</p>
+
+  <h2>When do the polls close?</h2>
+  <p class="sub-h">All times are Eastern Standard Time (clocks went back an hour on Sunday, Nov. 1). A state is listed when its <em>last</em> polls close. Results start coming in right after, but close races can take hours or days to call.</p>
+  <div class="table-scroll">
+  <table class="cmp times">
+    <thead><tr><th>Polls close (ET)</th><th>Senate races</th><th>House toss-ups on this site</th></tr></thead>
+    <tbody>
+      <tr><td class="t">6:00 PM</td><td>&mdash;</td><td><span class="nw">KY-06</span></td></tr>
+      <tr><td class="t">7:00 PM</td><td>Georgia, Kentucky, South Carolina, Virginia</td><td><span class="nw">FL-14</span>, <span class="nw">FL-22</span>, <span class="nw">SC-01</span>, <span class="nw">VA-01</span></td></tr>
+      <tr><td class="t">7:30 PM</td><td>North Carolina, Ohio, West Virginia</td><td><span class="nw">NC-01</span>, <span class="nw">OH-07</span></td></tr>
+      <tr><td class="t">8:00 PM</td><td>Alabama, Delaware, Florida, Illinois, Maine, Massachusetts, Mississippi, New Hampshire, New Jersey, Oklahoma, Rhode Island, Tennessee</td><td><span class="nw">MI-04</span>, <span class="nw">MI-07</span>, <span class="nw">MI-10</span>, <span class="nw">PA-01</span>, <span class="nw">TX-15</span>, <span class="nw">TX-35</span></td></tr>
+      <tr><td class="t">8:30 PM</td><td>Arkansas</td><td>&mdash;</td></tr>
+      <tr><td class="t">9:00 PM</td><td>Colorado, Iowa, Kansas, Louisiana, Michigan, Minnesota, Nebraska, New Mexico, South Dakota, Texas, Wyoming</td><td><span class="nw">CO-05</span>, <span class="nw">IA-02</span>, <span class="nw">NY-17</span></td></tr>
+      <tr><td class="t">10:00 PM</td><td>Montana</td><td><span class="nw">MT-01</span></td></tr>
+      <tr><td class="t">11:00 PM</td><td>Idaho, Oregon</td><td><span class="nw">CA-22</span></td></tr>
+      <tr><td class="t">1:00 AM (Wed.)</td><td>Alaska</td><td>&mdash;</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="dim" style="margin-top:12px;font-size:.88rem;max-width:820px">States that span two time zones close in the later zone. For example, most of Michigan closes at 8 PM, but a few Upper Peninsula counties close at 9. Some local polling places (like parts of New Hampshire) close earlier than the time shown, so don&rsquo;t use this table to figure out when <em>you</em> can vote.</p>
+
+  <h2>What it means for Trump</h2>
+  <p class="sub-h">Trump stays president no matter what happens Tuesday. The question is how much Congress helps him or holds him back for his last two years. Here&rsquo;s what changes in each scenario.</p>
+  <div class="scen-grid">
+    <div class="scen">
+      <h3>Republicans keep both</h3>
+      <div class="badges"><span class="badge r">HOUSE R</span><span class="badge r">SENATE R</span></div>
+      <ul>
+        <li>Congress stays lined up with the White House.</li>
+        <li>Trump&rsquo;s priorities can pass the House easily. In the Senate, budget bills need a simple majority and most other bills need 60 votes.</li>
+        <li>His nominees (cabinet, judges) keep getting confirmed.</li>
+        <li>Few congressional investigations of the administration.</li>
+      </ul>
+    </div>
+    <div class="scen">
+      <h3>Democrats win the House only</h3>
+      <div class="badges"><span class="badge d">HOUSE D</span><span class="badge r">SENATE R</span></div>
+      <ul>
+        <li>Democrats pick the Speaker and chair every House committee.</li>
+        <li>They can <strong>investigate</strong>: hold hearings and subpoena documents and officials.</li>
+        <li>Any bill Trump wants has to get through a Democratic-run House, and government spending bills need Democratic votes.</li>
+        <li>They could vote to impeach, but removing a president takes two-thirds of the Senate (67 votes).</li>
+      </ul>
+    </div>
+    <div class="scen">
+      <h3>Democrats win the Senate only</h3>
+      <div class="badges"><span class="badge r">HOUSE R</span><span class="badge d">SENATE D</span></div>
+      <ul>
+        <li>The Senate approves judges, cabinet members and Supreme Court justices. Democrats could block them.</li>
+        <li>Democrats would run Senate committees and decide what gets a vote.</li>
+        <li>Bills passed by the Republican House could stall in the Senate.</li>
+        <li>A 51-seat majority is thin. This is where the Fetterman question matters most.</li>
+      </ul>
+    </div>
+    <div class="scen">
+      <h3>Democrats win both</h3>
+      <div class="badges"><span class="badge d">HOUSE D</span><span class="badge d">SENATE D</span></div>
+      <ul>
+        <li>Congress becomes a major check on Trump: investigations from the House, blocked nominees from the Senate.</li>
+        <li>Very little of his legislative agenda could pass.</li>
+        <li>Budget and shutdown fights get bigger, since funding bills need both chambers.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout">
+    <p><strong>What doesn&rsquo;t change in any scenario:</strong></p>
+    <ul>
+      <li>Trump keeps his <strong>veto</strong>. Congress needs two-thirds of both chambers to override it.</li>
+      <li>He can still sign <strong>executive orders</strong> and direct federal agencies, though courts can review them.</li>
+      <li>Congress&rsquo;s power is mostly about <strong>bills, money, confirmations and oversight</strong>. It can&rsquo;t simply undo what the president does on his own.</li>
+    </ul>
+  </div>
+
+  <h2>Election night survival tips</h2>
+  <ol class="steps">
+    <li><b>Don&rsquo;t expect an answer at 8 PM.</b> Control of Congress usually comes down to a handful of close races, and those are the slowest to call.</li>
+    <li><b>Early numbers can mislead.</b> Some states count in-person votes first and mail ballots later (or the reverse), so a lead can shrink or grow as counting finishes.</li>
+    <li><b>The West Coast reports last.</b> California and other late-closing states can take days to finish, so the final answer may not be clear on Tuesday night.</li>
+  </ol>
+
+  <h2>Quick glossary</h2>
+  <dl class="gloss">
+    <div><dt>Incumbent</dt><dd>The person who currently holds the seat and is running to keep it.</dd></div>
+    <div><dt>Open seat</dt><dd>A seat with no incumbent running, because they retired, lost a primary, or are running for something else.</dd></div>
+    <div><dt>Flip</dt><dd>When a seat changes parties. Democrats need to flip Republican seats to take over, and vice versa.</dd></div>
+    <div><dt>Call (or &ldquo;projection&rdquo;)</dt><dd>When news outlets announce a winner before every vote is counted.</dd></div>
+    <div><dt>Caucus with</dt><dd>An independent senator who votes with one party to organize the Senate. On the Senate tab, Nebraska and South Dakota independents are marked this way.</dd></div>
+    <div><dt>Speaker of the House</dt><dd>The leader of the party that controls the House. Decides which bills get a vote.</dd></div>
+    <div><dt>Filibuster</dt><dd>A Senate rule that means most bills need 60 votes to move forward, not just 51.</dd></div>
+    <div><dt>Subpoena</dt><dd>A legal order to hand over documents or testify. Committee chairs in the majority party control these.</dd></div>
+    <div><dt>Confirmation</dt><dd>The Senate vote to approve a president&rsquo;s picks for cabinet, judges and other top jobs.</dd></div>
+    <div><dt>Cook Political Report</dt><dd>A nonpartisan newsletter that rates how competitive every race is. The House tab uses its ratings.</dd></div>
+  </dl>
+
+  <p class="src">Sources: Cook Political Report House ratings (updated Oct. 30, 2026); 270toWin (poll closing times and candidate fields); AP and CBS News reporting on Sen. Fetterman. Ratings can change right up to Election Day.</p>
+</section>
+
+
+<section class="panel" id="panel-senate" role="tabpanel" aria-labelledby="tab-senate" hidden>
+  <header class="masthead">
+    <div>
+      <p class="eyebrow">Class II &middot; November 3, 2026</p>
+      <h1>2026 Senate Tracker</h1>
+    </div>
+    <div class="masthead-right">
+      <p class="masthead-note">34 Democratic and 31 Republican seats aren't on the ballot this cycle. Of the 35 races below, Democrats need 17 to reach a 51-seat majority; Republicans need 19 to reach 50 with the vice-presidential tiebreaker. If John Fetterman defects from the Democratic caucus, Democrats need 18 to reach 52 and still hold 51.</p>
+      <button class="reset-btn" id="resetBtn">Reset all calls</button>
+    </div>
+  </header>
+
+  <div class="scoreboard">
+    <div class="stat-row">
+      <div class="stat" style="--stat-color:var(--d)">
+        <div class="num" id="statD">34</div>
+        <div class="label">Democrats</div>
+        <div class="sub" id="subD">17 more to clinch 51</div>
+        <div class="sub" id="subD52">18 more to reach 52 (w/o Fetterman)</div>
+      </div>
+      <div class="stat" style="--stat-color:var(--r)">
+        <div class="num" id="statR">31</div>
+        <div class="label">Republicans</div>
+        <div class="sub" id="subR">19 more to clinch 50</div>
+      </div>
+      <div class="stat" id="statIndWrap" style="--stat-color:var(--ind);display:none">
+        <div class="num" id="statInd">0</div>
+        <div class="label">Independent</div>
+        <div class="sub">caucus undecided</div>
+      </div>
+      <div class="stat" style="--stat-color:var(--mid)">
+        <div class="num" id="statUncalled">35</div>
+        <div class="label">Uncalled races</div>
+        <div class="sub" id="subUncalled">of 35 in play</div>
+      </div>
+    </div>
+
+    <div class="bar-wrap">
+      <div class="bar" id="bar"></div>
+      <div class="threshold below" style="left:50%" id="thresh50"><span class="tag">50 &middot; R + VP</span></div>
+      <div class="threshold" style="left:51%" id="thresh51"><span class="tag">51 &middot; D outright</span></div>
+      <div class="threshold right" style="left:52%" id="thresh52"><span class="tag">52 &middot; D w/o Fetterman</span></div>
+    </div>
+    <div class="bar-legend">
+      <span><i class="swatch" style="background:var(--d)"></i>Democratic (safe + called)</span>
+      <span><i class="swatch" style="background:var(--ind)"></i>Independent</span>
+      <span><i class="swatch" style="background:var(--surface-2);border:1px solid var(--border)"></i>Uncalled</span>
+      <span><i class="swatch" style="background:var(--r)"></i>Republican (safe + called)</span>
+    </div>
+  </div>
+
+  <div class="columns" id="columns"></div>
+
+  <footer>Candidate lineups reflect nominees reported as of late September 2026 and may shift before November 3. Click a name to call a race &middot; click again to undo.</footer>
+</section>
+
+<section class="panel" id="panel-house" role="tabpanel" aria-labelledby="tab-house" hidden>
+  <header class="masthead">
+    <div>
+      <p class="eyebrow">All 435 seats &middot; November 3, 2026</p>
+      <h1>2026 House Toss-Up Tracker</h1>
+    </div>
+    <div class="masthead-right">
+      <p class="masthead-note">Democrats need 218 of 435 seats to win control of the House. The Cook Political Report rates just 18 races as true Toss-Ups, and those are the ones below.</p>
+      <button class="reset-btn" id="hResetBtn">Reset all calls</button>
+    </div>
+  </header>
+
+  <div class="h-explain">
+    <b>Why only 18 races?</b> Most House seats aren&rsquo;t close: a district that votes 20 points for one party almost never switches. Cook already has <b>Democrats favored in 222</b> seats and <b>Republicans favored in 195</b> (its final projection is 227&ndash;240 Democratic seats). The 18 Toss-Ups below are the ones that could still go either way.
+  </div>
+
+  <div class="scoreboard">
+    <div class="stat-row">
+      <div class="stat" style="--stat-color:var(--d)">
+        <div class="num" id="hStatD">222</div>
+        <div class="label">Democrats</div>
+        <div class="sub" id="hSubD">4 above the 218 needed</div>
+      </div>
+      <div class="stat" style="--stat-color:var(--r)">
+        <div class="num" id="hStatR">195</div>
+        <div class="label">Republicans</div>
+        <div class="sub" id="hSubR">23 more needed, but only 18 toss-ups remain</div>
+      </div>
+      <div class="stat" style="--stat-color:var(--mid)">
+        <div class="num" id="hStatU">18</div>
+        <div class="label">Toss-ups left</div>
+        <div class="sub" id="hSubU">of 18 toss-ups</div>
+      </div>
+    </div>
+
+    <div class="bar-wrap">
+      <div class="bar" id="hBar"></div>
+      <div class="threshold" style="left:50.115%"><span class="tag">218 &middot; majority</span></div>
+    </div>
+    <div class="bar-legend">
+      <span><i class="swatch" style="background:var(--d)"></i>Democratic (Cook favors + called)</span>
+      <span><i class="swatch" style="background:var(--surface-2);border:1px solid var(--border)"></i>Toss-up, not yet called</span>
+      <span><i class="swatch" style="background:var(--r)"></i>Republican (Cook favors + called)</span>
+    </div>
+  </div>
+
+  <div id="hGroups"></div>
+
+  <footer>Ratings: Cook Political Report as of Oct. 30, 2026. Cook can still change them before polls close. Candidate fields via 270toWin. &ldquo;Polls close&rdquo; times are Eastern. Click a name to call a race &middot; click again to undo.</footer>
+</section>
+
+</div>
+
+<script>
+const CATEGORIES = [
+  {key:'lockD',   label:'Lock D',    color:'var(--d)',  wash:'var(--d-wash)'},
+  {key:'likelyD', label:'Likely D',  color:'var(--d2)', wash:'var(--d2-wash)'},
+  {key:'leanD',   label:'Lean D',    color:'var(--d3)', wash:'var(--d3-wash)'},
+  {key:'tossup',  label:'Toss-Up',   color:'var(--mid)',wash:'var(--mid-wash)'},
+  {key:'leanR',   label:'Lean R',    color:'var(--r3)', wash:'var(--r3-wash)'},
+  {key:'likelyR', label:'Likely R',  color:'var(--r2)', wash:'var(--r2-wash)'},
+  {key:'lockR',   label:'Lock R',    color:'var(--r)',  wash:'var(--r-wash)'},
+];
+
+const RACES = [
+  // Lock D
+  {id:'OR',cat:'lockD',state:'Oregon',cands:[{n:'Jeff Merkley',p:'D'},{n:'David Brock Smith',p:'R'}]},
+  {id:'NM',cat:'lockD',state:'New Mexico',cands:[{n:'Ben Ray Luján',p:'D'},{n:'Larry Marker',p:'R'}]},
+  {id:'CO',cat:'lockD',state:'Colorado',cands:[{n:'John Hickenlooper',p:'D'},{n:'Mark Baisley',p:'R'}]},
+  {id:'IL',cat:'lockD',state:'Illinois',cands:[{n:'Juliana Stratton',p:'D'},{n:'Don Tracy',p:'R'}]},
+  {id:'VA',cat:'lockD',state:'Virginia',cands:[{n:'Mark Warner',p:'D'},{n:'Bert Mizusawa',p:'R'}]},
+  {id:'NJ',cat:'lockD',state:'New Jersey',cands:[{n:'Cory Booker',p:'D'},{n:'Justin Murphy',p:'R'}]},
+  {id:'DE',cat:'lockD',state:'Delaware',cands:[{n:'Chris Coons',p:'D'},{n:'Michael Katz',p:'R'}]},
+  {id:'RI',cat:'lockD',state:'Rhode Island',cands:[{n:'Jack Reed',p:'D'},{n:'Raymond McKay',p:'R'}]},
+  {id:'MA',cat:'lockD',state:'Massachusetts',cands:[{n:'Ed Markey',p:'D'},{n:'John Deaton',p:'R'}]},
+  // Likely D
+  {id:'NC',cat:'likelyD',state:'North Carolina',cands:[{n:'Roy Cooper',p:'D'},{n:'Michael Whatley',p:'R'}]},
+  {id:'GA',cat:'likelyD',state:'Georgia',cands:[{n:'Jon Ossoff',p:'D'},{n:'Mike Collins',p:'R'}]},
+  {id:'MN',cat:'likelyD',state:'Minnesota',cands:[{n:'Peggy Flanagan',p:'D'},{n:'Michele Tafoya',p:'R'}]},
+  {id:'NH',cat:'likelyD',state:'New Hampshire',cands:[{n:'Chris Pappas',p:'D'},{n:'John E. Sununu',p:'R'}]},
+  // Lean D
+  {id:'AK',cat:'leanD',state:'Alaska',cands:[{n:'Mary Peltola',p:'D'},{n:'Dan Sullivan',p:'R'}]},
+  {id:'MI',cat:'leanD',state:'Michigan',cands:[{n:'Abdul El-Sayed',p:'D'},{n:'Mike Rogers',p:'R'}]},
+  // Toss-Up
+  {id:'KS',cat:'tossup',state:'Kansas',cands:[{n:'Adam Hamilton',p:'D'},{n:'Roger Marshall',p:'R'}]},
+  {id:'ME',cat:'tossup',state:'Maine',cands:[{n:'Troy Jackson',p:'D'},{n:'Susan Collins',p:'R'}]},
+  {id:'OH',cat:'tossup',state:'Ohio',cands:[{n:'Sherrod Brown',p:'D'},{n:'Jon Husted',p:'R'}]},
+  {id:'TX',cat:'tossup',state:'Texas',cands:[{n:'James Talarico',p:'D'},{n:'Ken Paxton',p:'R'}]},
+  {id:'IA',cat:'tossup',state:'Iowa',cands:[{n:'Josh Turek',p:'D'},{n:'Ashley Hinson',p:'R'}]},
+  // Lean R
+  {id:'SC',cat:'leanR',state:'South Carolina',cands:[{n:'Annie Andrews',p:'D'},{n:'Darline Graham',p:'R'}]},
+  {id:'NE',cat:'leanR',state:'Nebraska',cands:[{n:'Dan Osborn',p:'I',caucus:'D',note:'Caucuses with Democrats'},{n:'Pete Ricketts',p:'R'}]},
+  // Likely R
+  {id:'MS',cat:'likelyR',state:'Mississippi',cands:[{n:'Scott Colom',p:'D'},{n:'Cindy Hyde-Smith',p:'R'}]},
+  {id:'FL',cat:'likelyR',state:'Florida',cands:[{n:'Angie Nixon',p:'D'},{n:'Ashley Moody',p:'R'}]},
+  // Lock R
+  {id:'SD',cat:'lockR',state:'South Dakota',cands:[{n:'Brian Bengs',p:'I',caucus:'D',note:'Caucuses with Democrats'},{n:'Mike Rounds',p:'R'}]},
+  {id:'ID',cat:'lockR',state:'Idaho',cands:[{n:'Jim Risch',p:'R'},{n:'Todd Achilles',p:'I'},{n:'Natalie Fleming',p:'I'}]},
+  {id:'MT',cat:'lockR',state:'Montana',cands:[{n:'Alani Bankhead',p:'D'},{n:'Kurt Alme',p:'R'},{n:'Seth Bodnar',p:'I'}]},
+  {id:'WY',cat:'lockR',state:'Wyoming',cands:[{n:'James W. Byrd',p:'D'},{n:'Harriet Hageman',p:'R'}]},
+  {id:'OK',cat:'lockR',state:'Oklahoma',cands:[{n:"N'Kiyla Jasmine Thomas",p:'D'},{n:'Kevin Hern',p:'R'}]},
+  {id:'AR',cat:'lockR',state:'Arkansas',cands:[{n:'Hallie Shoffner',p:'D'},{n:'Tom Cotton',p:'R'}]},
+  {id:'LA',cat:'lockR',state:'Louisiana',cands:[{n:'Jamie Davis',p:'D'},{n:'Julia Letlow',p:'R'}]},
+  {id:'AL',cat:'lockR',state:'Alabama',cands:[{n:'Everett Wess',p:'D'},{n:'Barry Moore',p:'R'}]},
+  {id:'TN',cat:'lockR',state:'Tennessee',cands:[{n:'Marquita Bradshaw',p:'D'},{n:'Bill Hagerty',p:'R'}]},
+  {id:'KY',cat:'lockR',state:'Kentucky',cands:[{n:'Charles Booker',p:'D'},{n:'Andy Barr',p:'R'}]},
+  {id:'WV',cat:'lockR',state:'West Virginia',cands:[{n:'Rachel Fetty Anderson',p:'D'},{n:'Shelley Moore Capito',p:'R'}]},
+];
+
+const BASE_D = 34, BASE_R = 31, TOTAL_RACES = RACES.length;
+const STORE_KEY = 'senate2026calls';
+
+function loadCalls(){
+  try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }catch(e){ return {}; }
+}
+function saveCalls(calls){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(calls)); }catch(e){}
+}
+let calls = loadCalls(); // { raceId: candidateIndex }
+
+const columnsEl = document.getElementById('columns');
+
+CATEGORIES.forEach(cat=>{
+  const races = RACES.filter(r=>r.cat===cat.key);
+  const col = document.createElement('div');
+  col.className = 'column';
+  col.innerHTML = `<div class="col-head" style="--col-wash:${cat.wash};--col-color:${cat.color}">
+      <div class="name">${cat.label}</div>
+      <div class="count">${races.length} race${races.length===1?'':'s'}</div>
+    </div>`;
+  races.forEach(r=>{
+    const card = document.createElement('div');
+    card.className = 'race-card';
+    card.dataset.race = r.id;
+    const state = document.createElement('div');
+    state.className = 'race-state';
+    state.textContent = r.state;
+    card.appendChild(state);
+    const list = document.createElement('div');
+    list.className = 'race-candidates';
+    r.cands.forEach((c,i)=>{
+      const btn = document.createElement('button');
+      btn.className = 'cand';
+      btn.dataset.party = c.p;
+      const nameCol = c.note
+        ? `<span class="name-col"><span>${c.n}</span><span class="note">${c.note}</span></span>`
+        : `<span>${c.n}</span>`;
+      btn.innerHTML = `${nameCol}<span class="p">${c.p}</span>`;
+      btn.addEventListener('click', ()=>{
+        if(calls[r.id] === i){ delete calls[r.id]; }
+        else{ calls[r.id] = i; }
+        saveCalls(calls);
+        render();
+      });
+      list.appendChild(btn);
+    });
+    card.appendChild(list);
+    col.appendChild(card);
+  });
+  columnsEl.appendChild(col);
+});
+
+function partyColorVar(p){
+  return p==='D' ? 'var(--d-solid)' : p==='R' ? 'var(--r-solid)' : 'var(--i-solid)';
+}
+
+function render(){
+  let calledD=0, calledR=0, calledI=0;
+  RACES.forEach(r=>{
+    const card = columnsEl.querySelector(`.race-card[data-race="${r.id}"]`);
+    const idx = calls[r.id];
+    const buttons = card.querySelectorAll('.cand');
+    buttons.forEach((btn,i)=>{
+      btn.classList.toggle('called', idx===i);
+      btn.classList.toggle('faded', idx!==undefined && idx!==i);
+    });
+    if(idx!==undefined){
+      const cand = r.cands[idx];
+      const p = cand.p;
+      const bucket = cand.caucus || p;
+      card.classList.add('decided');
+      card.style.setProperty('--decided-color', partyColorVar(p));
+      if(bucket==='D') calledD++;
+      else if(bucket==='R') calledR++;
+      else calledI++;
+    } else {
+      card.classList.remove('decided');
+    }
+  });
+
+  const totalD = BASE_D + calledD;
+  const totalR = BASE_R + calledR;
+  const totalI = calledI;
+  const uncalled = TOTAL_RACES - calledD - calledR - calledI;
+
+  document.getElementById('statD').textContent = totalD;
+  document.getElementById('statR').textContent = totalR;
+  document.getElementById('statUncalled').textContent = uncalled;
+  document.getElementById('subUncalled').textContent = uncalled===0 ? 'all races called' : `of ${TOTAL_RACES} in play`;
+
+  const indWrap = document.getElementById('statIndWrap');
+  if(totalI>0){
+    indWrap.style.display='';
+    document.getElementById('statInd').textContent = totalI;
+  } else {
+    indWrap.style.display='none';
+  }
+
+  const subD = document.getElementById('subD');
+  const needD = 51 - totalD;
+  if(needD<=0){ subD.textContent='Majority clinched'; subD.classList.add('clinched'); }
+  else { subD.textContent = `${needD} more to clinch 51`; subD.classList.remove('clinched'); }
+
+  const subD52 = document.getElementById('subD52');
+  const need52 = 52 - totalD;
+  if(need52<=0){ subD52.textContent='Clears 51 even w/o Fetterman'; subD52.classList.add('clinched'); }
+  else { subD52.textContent = `${need52} more to reach 52 (w/o Fetterman)`; subD52.classList.remove('clinched'); }
+
+  const subR = document.getElementById('subR');
+  const needR = 50 - totalR;
+  if(needR<=0){ subR.textContent='Control clinched (w/ VP)'; subR.classList.add('clinched'); }
+  else { subR.textContent = `${needR} more to clinch 50`; subR.classList.remove('clinched'); }
+
+  const bar = document.getElementById('bar');
+  bar.innerHTML = '';
+  const segs = [
+    {n:BASE_D, color:'var(--d)'},
+    {n:calledD, color:'var(--d)'},
+    {n:calledI, color:'var(--ind)'},
+    {n:uncalled, color:null, cls:'uncalled'},
+    {n:calledR, color:'var(--r)'},
+    {n:BASE_R, color:'var(--r)'},
+  ];
+  segs.forEach(s=>{
+    if(s.n<=0) return;
+    const d = document.createElement('div');
+    d.className = 'seg' + (s.cls ? ' '+s.cls : '');
+    d.style.width = s.n + '%';
+    if(s.color) d.style.background = s.color;
+    bar.appendChild(d);
+  });
+}
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  if(confirm('Clear every called race and reset the tracker?')){
+    calls = {};
+    saveCalls(calls);
+    render();
+  }
+});
+
+render();
+</script>
+<script>
+(function(){
+  const TOTAL = 435, MAJ = 218, BASE_D = 222, BASE_R = 195;
+  const STORE = 'house2026calls';
+
+  // held = party that currently holds the seat (per Cook's Toss-Up columns)
+  const HOUSE = [
+    // Democrat-held toss-ups
+    {id:'FL-14',st:'Florida',held:'D',open:false,close:'7:00 PM',cands:[{n:'Kathy Castor',p:'D',inc:1},{n:'Mike Beltran',p:'R'}]},
+    {id:'FL-22',st:'Florida',held:'D',open:true,close:'7:00 PM',cands:[{n:'Pia Dandiya',p:'D'},{n:'Casey Askar',p:'R'}]},
+    {id:'NC-01',st:'North Carolina',held:'D',open:false,close:'7:30 PM',cands:[{n:'Don Davis',p:'D',inc:1},{n:'Laurie Buckhout',p:'R'}]},
+    {id:'TX-35',st:'Texas',held:'D',open:true,close:'8:00 PM',extra:'redrawn district',cands:[{n:'Johnny Garcia',p:'D'},{n:'Carlos De La Cruz',p:'R'}]},
+    // Republican-held toss-ups
+    {id:'KY-06',st:'Kentucky',held:'R',open:true,close:'6:00 PM',cands:[{n:'Zach Dembo',p:'D'},{n:'Ralph Alvarado',p:'R'}]},
+    {id:'SC-01',st:'South Carolina',held:'R',open:true,close:'7:00 PM',cands:[{n:'Nancy Lacore',p:'D'},{n:'Jenny Honeycutt',p:'R'}]},
+    {id:'VA-01',st:'Virginia',held:'R',open:false,close:'7:00 PM',cands:[{n:'Shannon Taylor',p:'D'},{n:'Rob Wittman',p:'R',inc:1}]},
+    {id:'OH-07',st:'Ohio',held:'R',open:false,close:'7:30 PM',cands:[{n:'Brian Poindexter',p:'D'},{n:'Max Miller',p:'R',inc:1}]},
+    {id:'MI-04',st:'Michigan',held:'R',open:false,close:'8:00 PM',cands:[{n:'Sean McCann',p:'D'},{n:'Bill Huizenga',p:'R',inc:1}]},
+    {id:'MI-07',st:'Michigan',held:'R',open:false,close:'8:00 PM',cands:[{n:'William Lawrence',p:'D'},{n:'Tom Barrett',p:'R',inc:1}]},
+    {id:'MI-10',st:'Michigan',held:'R',open:true,close:'8:00 PM',cands:[{n:'Christina Hines',p:'D'},{n:'Michael Bouchard',p:'R'}]},
+    {id:'PA-01',st:'Pennsylvania',held:'R',open:false,close:'8:00 PM',cands:[{n:'Bob Harvie',p:'D'},{n:'Brian Fitzpatrick',p:'R',inc:1}]},
+    {id:'TX-15',st:'Texas',held:'R',open:false,close:'8:00 PM',cands:[{n:'Bobby Pulido',p:'D'},{n:'Monica De La Cruz',p:'R',inc:1}]},
+    {id:'CO-05',st:'Colorado',held:'R',open:false,close:'9:00 PM',cands:[{n:'Jessica Killin',p:'D'},{n:'Jeff Crank',p:'R',inc:1}]},
+    {id:'IA-02',st:'Iowa',held:'R',open:true,close:'9:00 PM',cands:[{n:'Lindsay James',p:'D'},{n:'Joe Mitchell',p:'R'}]},
+    {id:'NY-17',st:'New York',held:'R',open:false,close:'9:00 PM',cands:[{n:'Cait Conley',p:'D'},{n:'Mike Lawler',p:'R',inc:1}]},
+    {id:'MT-01',st:'Montana',held:'R',open:true,close:'10:00 PM',cands:[{n:'Sam Forstag',p:'D'},{n:'Aaron Flint',p:'R'}]},
+    {id:'CA-22',st:'California',held:'R',open:false,close:'11:00 PM',cands:[{n:'Randy Villegas',p:'D'},{n:'David Valadao',p:'R',inc:1}]},
+  ];
+  const TU = HOUSE.length;
+
+  const GROUPS = [
+    {held:'D', name:'Democrat-held seats', blurb:'Republicans are trying to flip these', color:'var(--d)', wash:'var(--d-wash)'},
+    {held:'R', name:'Republican-held seats', blurb:'Democrats are trying to flip these', color:'var(--r)', wash:'var(--r-wash)'},
+  ];
+
+  function load(){ try{ return JSON.parse(localStorage.getItem(STORE)) || {}; }catch(e){ return {}; } }
+  function save(c){ try{ localStorage.setItem(STORE, JSON.stringify(c)); }catch(e){} }
+  let calls = load();
+
+  const groupsEl = document.getElementById('hGroups');
+
+  GROUPS.forEach(g=>{
+    const races = HOUSE.filter(r=>r.held===g.held);
+    const wrap = document.createElement('div');
+    wrap.className = 'h-group';
+    wrap.innerHTML = `<div class="col-head" style="--col-wash:${g.wash};--col-color:${g.color}">
+        <div class="name">${g.name} &middot; ${races.length}</div>
+        <div class="count">${g.blurb}</div>
+      </div>`;
+    const grid = document.createElement('div');
+    grid.className = 'h-grid';
+    races.forEach(r=>{
+      const card = document.createElement('div');
+      card.className = 'race-card';
+      card.dataset.race = r.id;
+      const title = document.createElement('div');
+      title.className = 'race-state';
+      title.textContent = r.id;
+      card.appendChild(title);
+      const meta = document.createElement('div');
+      meta.className = 'race-meta';
+      const status = r.open ? 'Open seat' + (r.extra ? ' (' + r.extra + ')' : '') : 'Incumbent running';
+      meta.innerHTML = `${r.st} &middot; ${status}<br>Polls close <span class="tm">${r.close}</span> ET`;
+      card.appendChild(meta);
+      const list = document.createElement('div');
+      list.className = 'race-candidates';
+      r.cands.forEach((c,i)=>{
+        const btn = document.createElement('button');
+        btn.className = 'cand';
+        btn.dataset.party = c.p;
+        const nameCol = c.inc
+          ? `<span class="name-col"><span>${c.n}</span><span class="note">Incumbent</span></span>`
+          : `<span>${c.n}</span>`;
+        btn.innerHTML = `${nameCol}<span class="p">${c.p}</span>`;
+        btn.addEventListener('click', ()=>{
+          if(calls[r.id] === i){ delete calls[r.id]; } else { calls[r.id] = i; }
+          save(calls);
+          render();
+        });
+        list.appendChild(btn);
+      });
+      card.appendChild(list);
+      grid.appendChild(card);
+    });
+    wrap.appendChild(grid);
+    groupsEl.appendChild(wrap);
+  });
+
+  function render(){
+    let cD = 0, cR = 0;
+    HOUSE.forEach(r=>{
+      const card = groupsEl.querySelector(`.race-card[data-race="${r.id}"]`);
+      const idx = calls[r.id];
+      card.querySelectorAll('.cand').forEach((btn,i)=>{
+        btn.classList.toggle('called', idx===i);
+        btn.classList.toggle('faded', idx!==undefined && idx!==i);
+      });
+      if(idx!==undefined){
+        const p = r.cands[idx].p;
+        card.classList.add('decided');
+        card.style.setProperty('--decided-color', p==='D' ? 'var(--d-solid)' : 'var(--r-solid)');
+        if(p==='D') cD++; else cR++;
+      } else {
+        card.classList.remove('decided');
+      }
+    });
+
+    const totD = BASE_D + cD, totR = BASE_R + cR, left = TU - cD - cR;
+    document.getElementById('hStatD').textContent = totD;
+    document.getElementById('hStatR').textContent = totR;
+    document.getElementById('hStatU').textContent = left;
+    document.getElementById('hSubU').textContent = left===0 ? 'all toss-ups called' : `of ${TU} toss-ups`;
+
+    const subD = document.getElementById('hSubD');
+    const needD = MAJ - totD;
+    if(needD < 0){ subD.textContent = `${-needD} above the 218 needed`; subD.classList.add('clinched'); }
+    else if(needD === 0){ subD.textContent = 'Exactly at 218: majority'; subD.classList.add('clinched'); }
+    else { subD.textContent = `${needD} more to reach 218`; subD.classList.remove('clinched'); }
+
+    const subR = document.getElementById('hSubR');
+    const needR = MAJ - totR;
+    if(needR < 0){ subR.textContent = `${-needR} above the 218 needed`; subR.classList.add('clinched'); }
+    else if(needR === 0){ subR.textContent = 'Exactly at 218: majority'; subR.classList.add('clinched'); }
+    else {
+      subR.classList.remove('clinched');
+      subR.textContent = left===0
+        ? `${needR} short of 218`
+        : (needR > left ? `${needR} more needed, but only ${left} toss-up${left===1?'':'s'} remain` : `${needR} more to reach 218`);
+    }
+
+    const bar = document.getElementById('hBar');
+    bar.innerHTML = '';
+    [
+      {n:BASE_D, color:'var(--d)'},
+      {n:cD,     color:'var(--d)'},
+      {n:left,   color:null, cls:'uncalled'},
+      {n:cR,     color:'var(--r)'},
+      {n:BASE_R, color:'var(--r)'},
+    ].forEach(s=>{
+      if(s.n<=0) return;
+      const d = document.createElement('div');
+      d.className = 'seg' + (s.cls ? ' '+s.cls : '');
+      d.style.width = (s.n / TOTAL * 100) + '%';
+      if(s.color) d.style.background = s.color;
+      bar.appendChild(d);
+    });
+  }
+
+  document.getElementById('hResetBtn').addEventListener('click', ()=>{
+    if(confirm('Clear every called House race and reset the tracker?')){
+      calls = {}; save(calls); render();
+    }
+  });
+
+  render();
+})();
+
+</script>
+<script>
+(function(){
+  const names = ['start','senate','house'];
+  const tabs = Array.from(document.querySelectorAll('.tab'));
+  const panels = {};
+  names.forEach(n=>{ panels[n] = document.getElementById('panel-'+n); });
+
+  function show(name){
+    if(names.indexOf(name) === -1) name = 'start';
+    tabs.forEach(t=>{
+      const on = t.dataset.tab === name;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+    });
+    names.forEach(n=>{ panels[n].hidden = (n !== name); });
+    window.scrollTo(0,0);
+  }
+
+  tabs.forEach((t,i)=>{
+    t.addEventListener('click', ()=>{ location.hash = t.dataset.tab; });
+    t.addEventListener('keydown', e=>{
+      let j = null;
+      if(e.key === 'ArrowRight') j = (i+1) % tabs.length;
+      if(e.key === 'ArrowLeft')  j = (i-1+tabs.length) % tabs.length;
+      if(j !== null){ e.preventDefault(); tabs[j].focus(); location.hash = tabs[j].dataset.tab; }
+    });
+  });
+
+  window.addEventListener('hashchange', ()=>show(location.hash.slice(1)));
+  show(location.hash.slice(1));
+})();
+
+</script>
+</body>
+</html>
